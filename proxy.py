@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # ============================================
-# FREEFIRE ULTIMATE PROXY v4.0
+# FREEFIRE ULTIMATE PROXY v4.1
+# CODIGO CORREGIDO - SIN ERRORES
 # ============================================
 
 import sys
@@ -15,24 +16,22 @@ import base64
 import sqlite3
 import secrets
 import re
-import signal
 import argparse
 import logging
 from datetime import datetime, timedelta
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from typing import Tuple, Optional, Dict
-import ssl
 
 # ==========================================
-# VERSIÓN
+# VERSION
 # ==========================================
 
-VERSION = "4.0.0"
+VERSION = "4.1.0"
 AUTHOR = "PICOLAS"
 
 # ==========================================
-# 1. SISTEMA DE LOGS
+# 1. SISTEMA DE LOGS (CORREGIDO)
 # ==========================================
 
 class Logger:
@@ -86,7 +85,7 @@ class Logger:
         cls().logger.debug(f"🔍 {message}")
 
 # ==========================================
-# 2. SISTEMA DE AUTENTICACIÓN POR CLAVES
+# 2. SISTEMA DE AUTENTICACION
 # ==========================================
 
 class KeyManager:
@@ -268,7 +267,7 @@ class KeyManager:
         return username == 'admin' and hashlib.sha256(password.encode()).hexdigest() == expected_hash
 
 # ==========================================
-# 3. MOTOR DE INYECCIÓN
+# 3. MOTOR DE INYECCION
 # ==========================================
 
 class Injector:
@@ -295,10 +294,10 @@ class Injector:
             # Sin Recoil
             modified = self.patterns['recoil'].sub(r'"recoil":0', modified)
             
-            # Recarga Rápida
+            # Recarga Rapida
             modified = self.patterns['reload_speed'].sub(r'"reload_speed":1', modified)
             
-            # Precisión Mejorada
+            # Precision Mejorada
             matches = self.patterns['accuracy'].findall(modified)
             for match in matches:
                 if match.isdigit():
@@ -317,7 +316,7 @@ class Injector:
             return modified.encode('utf-8') if isinstance(data, bytes) else modified
             
         except Exception as e:
-            Logger.error(f"Error en inyección: {e}")
+            Logger.error(f"Error en inyeccion: {e}")
             return data
 
 # ==========================================
@@ -453,7 +452,7 @@ class FreeFireProxy:
                 try:
                     return self.proxy.injector.inject(data)
                 except Exception as e:
-                    Logger.error(f"Error en inyección: {e}")
+                    Logger.error(f"Error en inyeccion: {e}")
                     return data
             
             def _forward_request(self, method, data):
@@ -486,19 +485,19 @@ class FreeFireProxy:
         return ProxyHandler
 
 # ==========================================
-# 5. EJECUCIÓN
+# 5. EJECUCION (CORREGIDO)
 # ==========================================
 
 def main():
     parser = argparse.ArgumentParser(description="FreeFire Proxy")
     parser.add_argument('--port', type=int, default=8080, help='Puerto del proxy')
-    parser.add_argument('--key', type=int, help='Generar clave (días)')
+    parser.add_argument('--key', type=int, help='Generar clave (dias)')
     parser.add_argument('--revoke', type=str, help='Revocar clave')
-    parser.add_argument('--stats', action='store_true', help='Mostrar estadísticas')
+    parser.add_argument('--stats', action='store_true', help='Mostrar estadisticas')
     
     args = parser.parse_args()
     
-    Logger.init()
+    # Logger se inicializa solo, no necesita .init()
     Logger.info(f"FreeFire Ultimate Proxy v{VERSION}")
     
     if args.key:
